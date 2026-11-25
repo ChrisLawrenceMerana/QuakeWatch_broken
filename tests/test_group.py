@@ -1,5 +1,5 @@
 import pandas as pd
-
+import pytest
 import quakewatch as qw
 
 
@@ -20,3 +20,38 @@ def test_features_stage_reads_depth_km(tmp_path, monkeypatch):
     out = qw.features_stage()
 
     assert list(out["depth_class"]) == ["shallow", "intermediate", "deep"]
+
+
+@pytest.mark.parametrize(
+    "utc_iso, expected_hour, expected_str",
+    [
+        ("2023-12-02T14:37:00Z", 22, "02 Dec 2023 22:37"),
+        ("2023-12-02T00:00:00Z", 8, "02 Dec 2023 08:00"),
+        ("2023-12-02T16:00:00Z", 0, "03 Dec 2023 00:00"),
+    ],
+)
+def test_manila_timezone_conversion(
+    tmp_path, monkeypatch, utc_iso, expected_hour, expected_str
+):
+    """Incident 2: UTC times must be converted to Manila time (UTC+8), not relabelled."""
+    clean_dir = tmp_path / "clean"
+    feat_dir = tmp_path / "features"
+    clean_dir.mkdir()
+
+    events = pd.DataFrame(
+        {
+            "time": [pd.Timestamp(utc_iso)],
+            "mag": [7.6],
+            "depth_km": [10.0],
+        }
+    )
+    events.to_parquet(clean_dir / "events.parquet", index=False)
+
+    monkeypatch.setattr(qw, "CLEAN", clean_dir)
+    monkeypatch.setattr(qw, "FEAT", feat_dir)
+
+    result = qw.features_stage()
+
+    assert str(result.loc[0, "local"].tz) == "Asia/Manila"
+    assert int(result.loc[0, "hour_local"]) == expected_hour
+    assert f"{result.loc[0, 'local']:%d %b %Y %H:%M}" == expected_str
