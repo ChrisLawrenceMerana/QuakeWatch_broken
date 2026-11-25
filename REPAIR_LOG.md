@@ -18,7 +18,7 @@ Study group: ______________________   Members: _________________________________
 | Test name | Tool used (`parametrize`, fake API, `caplog`) | What it proves | Fails on the broken code? | Written by |
 | --- | --- | --- | --- | --- |
 | test_features_stage_reads_depth_km | monkeypatch (fake data folder) | features_stage reads `depth_km` and gives shallow, intermediate and deep classes | Yes | Sheryl Jane E. Galleto |
-| | | | | |
+| test_manila_timezone_conversion | parametrize (3 cases), monkeypatch (fake data folder) | features_stage converts UTC to Manila time (UTC+8), including across midnight | Yes | Macie L. Moises |
 | | | | | |
 
 ## Logging we added
