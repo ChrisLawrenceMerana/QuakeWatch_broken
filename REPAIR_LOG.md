@@ -10,7 +10,7 @@ Study group: ______________________   Members: _________________________________
 | 2 | The dashboard says the strongest earthquake struck at 14:37 Manila time on 2 December 2023. The news reported it at 10:37 PM. | `quakewatch.py`, `features_stage()`: `t["time"].dt.tz_localize(None).dt.tz_localize("Asia/Manila")` relabelled the UTC clock time as Manila time instead of converting it, so every local time was 8 hours early (UTC+8). | Changed it to `t["time"].dt.tz_convert("Asia/Manila")`. | `test_manila_timezone_conversion` in `tests/test_group.py` | Macie L. Moises |
 | 3 | A magnitude 6.0 earthquake is labelled `Moderate` instead of `Strong`. | `quakewatch.py`, `MAG_BINS` (line 33): the second bin edge was `6.05` instead of `5.95`, placing `6.0` inside `(4.95, 6.05]` (`Moderate`). | Changed `MAG_BINS` second edge from `6.05` to `5.95` so `6.0`–`6.9` maps to `Strong`. | `test_features.py::test_strong_or_above_count` and `test_group.py::test_mag_class_strong_boundary` | Aljur Cabalfin |
 | 4 | Earthquakes in mindanao are listed with a different location | The order of `longitude` and `latitude` in `nearest_city` are swapped, specifically for `events`| Swapped `latitude` and `longitude` for `events` | `test_correct_coordinates` | Clarence John D. Ello |
-| 5 | | | | | |
+| 5 | `load_new` saves events that have already been saved as seen when running a second time| The function does not mark what has already been saved | `watermark()` was added in order for `load_new` to track saved files | `test_second_load_no_dupes`| Clarence John D. Ello |
 | 6 | | | | | |
 
 ## Our own tests (in `tests/test_group.py`)
@@ -20,6 +20,7 @@ Study group: ______________________   Members: _________________________________
 | test_features_stage_reads_depth_km | monkeypatch (fake data folder) | features_stage reads `depth_km` and gives shallow, intermediate and deep classes | Yes | Sheryl Jane E. Galleto |
 | test_manila_timezone_conversion | parametrize (3 cases), monkeypatch (fake data folder) | features_stage converts UTC to Manila time (UTC+8), including across midnight | Yes | Macie L. Moises |
 | test_correct_coordinates | paramterize (2 cases) | nearest_city now uses latitude and longitude in the intended order | Yes | Clarence John D. Ello|
+| test_second_load_no_dupes | monkeypatch(fake API), caplog | Loading a second time no longer saves again | Yes | Clarence John D. Ello |
 | | | | | |
 
 ## Logging we added
