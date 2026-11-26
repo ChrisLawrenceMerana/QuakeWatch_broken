@@ -70,3 +70,20 @@ def test_mag_class_strong_boundary(mag, expected):
     """Incident 3: magnitude 6.0 to 6.9 must be labelled Strong."""
     result = qw.mag_class(pd.Series([mag])).iloc[0]
     assert result == expected
+
+
+@pytest.mark.parametrize("lat, lon, city_id", [
+    (8.9, 126.4, "C10"), 
+    (17.5, 121.8, "C04"),
+])
+
+def test_correct_coordinates(lat, lon, city_id):
+    """Incident 4: latitude and longitude must not be swapped"""
+    events = pd.DataFrame({"latitude": [lat], "longitude": [lon]})
+    cities = pd.DataFrame({"city_id": ["C04", "C10"],
+                           "latitude": [17.6132, 8.9475],
+                           "longitude": [121.7270, 125.5406]})
+
+    ids, _ = qw.correct_coordinates(events, cities)
+
+    assert ids[0] == city_id
