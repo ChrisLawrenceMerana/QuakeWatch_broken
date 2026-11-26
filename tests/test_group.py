@@ -91,7 +91,7 @@ def test_correct_coordinates(lat, lon, city_id):
 def test_second_load_no_dupes(tmp_path, monkeypatch, caplog):
     """Incident 5: loading the seame event twice must save it only once"""
     event = {"id": "a",
-             "proprties": {"time": 1700000000000, "mag": 5.5, "magtype": "mww", "place": "test"},
+             "properties": {"time": 1700000000000, "mag": 5.5, "magType": "mww", "place": "test"},
              "geometry": {"coordinates": [126.4, 8.9, 10]}}
     monkeypatch.setattr(qw, "RAW", tmp_path / "raw")
     monkeypatch.setattr(qw, "get_json", lambda *args, **kwargs: {"features": [event]})
