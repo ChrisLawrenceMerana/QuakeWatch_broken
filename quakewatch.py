@@ -104,7 +104,7 @@ def save_raw(table):
 def load_new(until=LAST_DAY):
     """Fetch only what is not saved yet. Returns the number of new rows."""
     saved = watermark()
-    start = FIRST_DAY if saved is None else mark.strftime("%Y-%m-%dT%H:%M:%S")
+    start = FIRST_DAY if saved is None else saved.strftime("%Y-%m-%dT%H:%M:%S")
     fetched = fetch_range(start, until)
     if saved is not None:
         saved = pd.read_parquet(RAW, columns=["id"])["id"]
