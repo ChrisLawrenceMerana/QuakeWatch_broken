@@ -55,3 +55,18 @@ def test_manila_timezone_conversion(
     assert str(result.loc[0, "local"].tz) == "Asia/Manila"
     assert int(result.loc[0, "hour_local"]) == expected_hour
     assert f"{result.loc[0, 'local']:%d %b %Y %H:%M}" == expected_str
+
+
+@pytest.mark.parametrize(
+    "mag, expected",
+    [
+        (5.9, "Moderate"),
+        (6.0, "Strong"),
+        (6.9, "Strong"),
+        (7.0, "Major"),
+    ],
+)
+def test_mag_class_strong_boundary(mag, expected):
+    """Incident 3: magnitude 6.0 to 6.9 must be labelled Strong."""
+    result = qw.mag_class(pd.Series([mag])).iloc[0]
+    assert result == expected
