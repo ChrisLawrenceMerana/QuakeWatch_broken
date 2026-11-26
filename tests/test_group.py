@@ -84,6 +84,21 @@ def test_correct_coordinates(lat, lon, city_id):
                            "latitude": [17.6132, 8.9475],
                            "longitude": [121.7270, 125.5406]})
 
-    ids, _ = qw.correct_coordinates(events, cities)
+    ids, _ = qw.nearest_city(events, cities)
 
     assert ids[0] == city_id
+
+def test_second_load_no_dupes(tmp_path, monkeypatch, caplog):
+    """Incident 5: loading the seame event twice must save it only once"""
+    event = {"id": "a",
+             "proprties": {"time": 1700000000000, "mag": 5.5, "magtype": "mww", "place": "test"},
+             "geometry": {"coordinates": [126.4, 8.9, 10]}}
+    monkeypatch.setattr(qw, "RAW", tmp_path / "raw")
+    monkeypatch.setattr(qw, "get_json", lambda *args, **kwargs: {"features": [event]})
+
+    assert qw.load_new() == 1
+    with caplog.at_level("INFO", logger = "quakewatch"):
+        assert qw.load_new() == 0 
+
+    assert "acquire: 0 new rows" in caplog.text
+    assert len(qw.read_raw()) == 1
