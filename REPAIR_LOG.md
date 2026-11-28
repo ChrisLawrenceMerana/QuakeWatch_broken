@@ -1,6 +1,6 @@
 # Repair log
 
-Study group: ______________________   Members: ______________________________________________
+Study group: 2DSA2 GROUP 5   Members: Cabalfin, Ello, Galleto, Meraña, Moises
 
 ## Defects
 
@@ -11,7 +11,7 @@ Study group: ______________________   Members: _________________________________
 | 3 | A magnitude 6.0 earthquake is labelled `Moderate` instead of `Strong`. | `quakewatch.py`, `MAG_BINS` (line 33): the second bin edge was `6.05` instead of `5.95`, placing `6.0` inside `(4.95, 6.05]` (`Moderate`). | Changed `MAG_BINS` second edge from `6.05` to `5.95` so `6.0`–`6.9` maps to `Strong`. | `test_features.py::test_strong_or_above_count` and `test_group.py::test_mag_class_strong_boundary` | Aljur Cabalfin |
 | 4 | Earthquakes in mindanao are listed with a different location | The order of `longitude` and `latitude` in `nearest_city` are swapped, specifically for `events`| Swapped `latitude` and `longitude` for `events` | `test_correct_coordinates` | Clarence John D. Ello |
 | 5 | `load_new` saves events that have already been saved as seen when running a second time| The function does not mark what has already been saved | `watermark()` was added in order for `load_new` to track saved files | `test_second_load_no_dupes`| Clarence John D. Ello |
-| 6 | A row with depth -5 km is in the clean file, and the log says 0 rejected. | `quakewatch.py`, `split_by_contract()`: `except Exception: pass` hid the pandera error, and the function always returned every row as good with an empty rejects table. | Validate with `lazy=True`, read the failing row indexes from `failure_cases`, split into good and rejected rows, log a WARNING, and re-raise table-wide errors with `log.exception`. | `test_bad_rows_are_set_aside` in `tests/test_integrate.py`; `test_bad_depth_is_rejected_and_warned` and `test_depth_limits` in `tests/test_group.py` | ______ |
+| 6 | A row with depth -5 km is in the clean file, and the log says 0 rejected. | `quakewatch.py`, `split_by_contract()`: `except Exception: pass` hid the pandera error, and the function always returned every row as good with an empty rejects table. | Validate with `lazy=True`, read the failing row indexes from `failure_cases`, split into good and rejected rows, log a WARNING, and re-raise table-wide errors with `log.exception`. | `test_bad_rows_are_set_aside` in `tests/test_integrate.py`; `test_bad_depth_is_rejected_and_warned` and `test_depth_limits` in `tests/test_group.py` | Chris Lawrence O. Meraña |
 
 ## Our own tests (in `tests/test_group.py`)
 
@@ -21,8 +21,8 @@ Study group: ______________________   Members: _________________________________
 | test_manila_timezone_conversion | parametrize (3 cases), monkeypatch (fake data folder) | features_stage converts UTC to Manila time (UTC+8), including across midnight | Yes | Macie L. Moises |
 | test_correct_coordinates | paramterize (2 cases) | nearest_city now uses latitude and longitude in the intended order | Yes | Clarence John D. Ello|
 | test_second_load_no_dupes | monkeypatch(fake API), caplog | Loading a second time no longer saves again | Yes | Clarence John D. Ello |
-| test_bad_depth_is_rejected_and_warned | caplog | A -5 km row is set aside, the good rows are kept, and a WARNING is logged | Yes | ______ |
-| test_depth_limits | parametrize (4 cases) | Depth 0 and 700 are accepted; -0.1 and 700.1 are rejected | Yes | ______ |
+| test_bad_depth_is_rejected_and_warned | caplog | A -5 km row is set aside, the good rows are kept, and a WARNING is logged | Yes | Chris Lawrence O. Meraña |
+| test_depth_limits | parametrize (4 cases) | Depth 0 and 700 are accepted; -0.1 and 700.1 are rejected | Yes | Chris Lawrence O. Meraña |
 
 ## Logging we added
 
@@ -34,4 +34,4 @@ Study group: ______________________   Members: _________________________________
 
 ## One thing we learned about debugging
 
-(two or three sentences)
+The hardest bug to find was incident 6, because nothing crashed. An except Exception: pass swallowed the validation error, so the code ran without errors and still produced wrong output. Incident 1's KeyError also stopped the pipeline early, so the later problems only showed up after we fixed it. We learned to read the failing test first, fix one incident at a time, and write a test that fails on the broken code before trusting a fix.

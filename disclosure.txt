@@ -1,0 +1,38 @@
+DISCLOSURE
+DSA 4153, Week 15 group activity: QuakeWatch Repair Shop
+
+Study group: 2DSA2 - GROUP 5
+
+MEMBERS AND WHO DID WHAT
+
+- Sheryl Jane E. Galleto
+  Incident 1 (KeyError on 'depth'). Wrote test_features_stage_reads_depth_km.
+
+- Macie L. Moises
+  Incident 2 (UTC to Manila time). Wrote test_manila_timezone_conversion.
+
+- Aljur Cabalfin
+  Incident 3 (magnitude 6.0 labelled Moderate).
+
+- Clarence John D. Ello
+  Incident 4 (latitude and longitude swapped in nearest_city) and
+  incident 5 (events saved twice). Wrote test_correct_coordinates and
+  test_second_load_no_dupes.
+
+- Chris Lawrence O. Meraña
+  Incident 6 (bad rows not rejected), logging in quakewatch.py and run.py,
+  and the remaining tests and log entries (see the AI section below).
+
+HELP USED, INCLUDING AI TOOLS
+
+We used Claude (an AI assistant made by Anthropic) for the following:
+
+- Checking by reading the code whether incidents 1 to 6 were fixed. 
+- Helped in suggesting code to correct the incidents in the program.
+
+The group ran the full test suite on our own machine (36 passed) and
+reviewed the changes before submitting. We did not edit the supplied tests
+or conftest.py.
+
+Other help: none
+______________________________________________________________
