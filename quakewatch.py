@@ -129,9 +129,18 @@ CONTRACT = pa.DataFrameSchema({
 def split_by_contract(raw):
     """Return (good rows, rejected rows)."""
     try:
-        CONTRACT.validate(raw)
-    except Exception:
-        pass
+        CONTRACT.validate(raw, lazy=True)
+    except pa.errors.SchemaErrors as err:
+        cases = err.failure_cases
+        if cases["index"].isna().any():
+            # a column is missing or has the wrong type: the whole table is bad
+            log.exception("integrate: contract failed for the whole table")
+            raise
+        bad = cases["index"].unique()
+        rejects = raw.loc[raw.index.isin(bad)]
+        good = raw.loc[~raw.index.isin(bad)]
+        log.warning("integrate: %d rows rejected by the contract", len(rejects))
+        return good, rejects
     return raw, raw.iloc[0:0]
 
 
