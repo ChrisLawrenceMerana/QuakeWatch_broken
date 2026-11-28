@@ -102,3 +102,33 @@ def test_second_load_no_dupes(tmp_path, monkeypatch, caplog):
 
     assert "acquire: 0 new rows" in caplog.text
     assert len(qw.read_raw()) == 1
+
+
+def _events(depths):
+    n = len(depths)
+    return pd.DataFrame({
+        "id": [f"e{i}" for i in range(n)],
+        "mag": [5.5] * n,
+        "depth_km": [float(d) for d in depths],
+        "latitude": [10.0] * n,
+        "longitude": [125.0] * n,
+        "place": ["test"] * n,
+    })
+
+
+def test_bad_depth_is_rejected_and_warned(caplog):
+    """Incident 6: a row with depth -5 km must be set aside, with a WARNING."""
+    raw = _events([10, -5, 700])
+    with caplog.at_level("WARNING", logger="quakewatch"):
+        good, rejects = qw.split_by_contract(raw)
+
+    assert list(rejects["id"]) == ["e1"]
+    assert list(good["id"]) == ["e0", "e2"]
+    assert "1 rows rejected" in caplog.text
+
+
+@pytest.mark.parametrize("depth, rejected", [(0, 0), (700, 0), (-0.1, 1), (700.1, 1)])
+def test_depth_limits(depth, rejected):
+    good, rejects = qw.split_by_contract(_events([depth]))
+    assert len(rejects) == rejected
+    assert len(good) == 1 - rejected
